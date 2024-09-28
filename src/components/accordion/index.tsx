@@ -3,6 +3,7 @@ import Accordion2 from "./2_r";
 import Accordion3 from "./3_r";
 import Accordion4V from "./4_v";
 import Accordion5 from "./5_r";
+import Accordion6 from "./6_r";
 import cx from "./cx";
 
 const Accordions = () => {
@@ -14,6 +15,7 @@ const Accordions = () => {
       <Accordion3 />
       <Accordion4V />
       <Accordion5 />
+      <Accordion6 />
     </div>
   );
 };
