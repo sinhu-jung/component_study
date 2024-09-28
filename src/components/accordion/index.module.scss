@@ -78,14 +78,12 @@
     .tab {
       display: block;
     }
-
     .description {
       padding: 0 15px;
       border-bottom-width: 0;
       max-height: 0;
       transition: ease 0.3s;
     }
-
     .input:checked {
       + .tab {
         background-color: #ace;
@@ -97,8 +95,32 @@
       ~ .description {
         padding: 15px;
         border-bottom-width: 1px;
-        max-height: 100vh;
+        max-height: 300px;
       }
     }
+  }
+
+  details[open] summary {
+    background-color: #ace;
+    padding: 15px;
+    border-bottom-width: 0;
+  }
+
+  details[open] .description {
+    padding: 15px;
+    border-bottom-width: 0;
+  }
+
+  summary {
+    padding: 15px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  summary::marker {
+    content: "+ ";
+  }
+  details[open] summary::marker {
+    content: "- ";
   }
 }
