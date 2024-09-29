@@ -1,5 +1,9 @@
 import TabMenu1 from "./1_r";
 import TabMenu2 from "./2_r";
+import TabMenu3 from "./3_r";
+import TabMenu4 from "./4_v";
+import TabMenu5 from "./5_r";
+import TabMenu6 from "./6_r";
 import cx from "./cx";
 
 const TabMenus = () => {
@@ -8,6 +12,10 @@ const TabMenus = () => {
       <h2>탭메뉴</h2>
       <TabMenu1 />
       <TabMenu2 />
+      <TabMenu3 />
+      <TabMenu4 />
+      <TabMenu5 />
+      <TabMenu6 />
     </div>
   );
 };

@@ -24,7 +24,7 @@ const TabMenu1 = () => {
   const [currentId, setCurrentId] = useState<string | null>(data[0].id);
 
   const toggleItem = (id: string) => () => {
-    setCurrentId((prev) => (prev === id ? null : id));
+    setCurrentId(id);
   };
 
   const currentDescription = data.find(
