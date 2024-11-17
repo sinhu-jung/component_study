@@ -1,4 +1,5 @@
 import Accordions from "./components/accordion";
+import LineClamps from "./components/lineClamp";
 import TabMenus from "./components/tabMenu";
 import TextBoxes from "./components/textBox";
 import Tooltip from "./components/tooltip";
@@ -93,7 +94,7 @@ export const routes: Record<ROUTE_PATH, ROUTE> = {
     key: "/lineClamp",
     link: "/lineClamp",
     name: "05. 여러줄 말줄임",
-    children: null,
+    children: LineClamps,
   },
   "/lazyLoading": {
     key: "/lazyLoading",
