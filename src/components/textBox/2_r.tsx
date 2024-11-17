@@ -3,21 +3,13 @@ import cx from "./cx";
 import { measureLines } from "@/service/utils";
 
 const TextBox2 = () => {
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    const elem = textAreaRef.current;
-    const handleInput = () => {
-      if (!elem) return;
-      const val = elem.value;
-      const lines = Math.min(Math.max(measureLines(elem, val), 3), 15);
-      elem.rows = lines;
-    };
-    if (elem) elem.addEventListener("input", handleInput);
-    return () => {
-      if (elem) elem.removeEventListener("input", handleInput);
-    };
-  }, []);
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const elem = e.target;
+    if (!elem) return;
+    const val = elem.value;
+    const lines = Math.min(Math.max(measureLines(elem, val), 3), 15);
+    elem.rows = lines;
+  };
 
   return (
     <>
@@ -25,7 +17,7 @@ const TextBox2 = () => {
         #2 <sub>uncontrolled. canvas</sub>
       </h1>
       <div className={cx("container")}>
-        <textarea ref={textAreaRef} className={cx("textarea")} rows={3} />
+        <textarea className={cx("textarea")} rows={3} onInput={handleInput} />
       </div>
     </>
   );
