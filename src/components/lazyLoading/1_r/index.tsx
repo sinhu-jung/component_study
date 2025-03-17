@@ -17,6 +17,7 @@ const LazyImage = ({
   src: string;
   width: number;
   height: number;
+  loading: "lazy" | "eager";
 }) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const [loaded, setLoaded] = useState(false);
@@ -57,20 +58,26 @@ const LazyImage = ({
   );
 };
 
-// const builtInLazySupported = "loading" in HTMLImageElement.prototype;
+const builtInLazySupported = "loading" in HTMLImageElement.prototype;
+const BuiltInImage = (props: any) => (
+  <img {...props} className={cx({ lazy: true })} />
+);
+const Component = builtInLazySupported ? BuiltInImage : LazyImage;
 
 const LazyLoad1 = () => {
-  // const Component = builtInLazySupported
-  //   ? (props: any) => <img {...props} />
-  //   : LazyImage;
-
   return (
     <>
       <h2>
         지연로딩<sub>#1</sub>
       </h2>
       {data.map((url, index) => (
-        <LazyImage key={index} src={url} width={600} height={320} />
+        <Component
+          key={index}
+          src={url}
+          width={600}
+          height={320}
+          loading="lazy"
+        />
       ))}
     </>
   );
