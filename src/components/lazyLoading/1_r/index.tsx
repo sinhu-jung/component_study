@@ -58,7 +58,8 @@ const LazyImage = ({
   );
 };
 
-const builtInLazySupported = "loading" in HTMLImageElement.prototype;
+const builtInLazySupported =
+  typeof window !== "undefined" && "loading" in HTMLImageElement.prototype;
 const BuiltInImage = (props: any) => (
   <img {...props} className={cx({ lazy: true })} />
 );
