@@ -1,4 +1,6 @@
 import Accordions from "./components/accordion";
+import LazyLoad1 from "./components/lazyLoading/1_r";
+import LazyLoading_V from "./components/lazyLoading/1_v";
 import LineClamps from "./components/lineClamp";
 import TabMenus from "./components/tabMenu";
 import TextBoxes from "./components/textBox";
@@ -24,6 +26,8 @@ export const routePaths = [
   "/selectBox",
   "/autoComplete",
   "/dnd",
+  "/lazyLoading/1_r",
+  "/lazyLoading/1_v",
 ] as const;
 export type ROUTE_PATH = (typeof routePaths)[number];
 
@@ -98,9 +102,21 @@ export const routes: Record<ROUTE_PATH, ROUTE> = {
   },
   "/lazyLoading": {
     key: "/lazyLoading",
-    link: "/lazyLoading",
+    link: "/lazyLoading/1_r",
     name: "06. 지연 로딩",
-    children: null,
+    children: ["/lazyLoading/1_r", "/lazyLoading/1_v"],
+  },
+  "/lazyLoading/1_r": {
+    key: "/lazyLoading/1_r",
+    link: "/lazyLoading/1_r",
+    name: "#1 React",
+    children: LazyLoad1,
+  },
+  "/lazyLoading/1_v": {
+    key: "/lazyLoading/1_v",
+    link: "/lazyLoading/1_v",
+    name: "#1 Vanilla",
+    children: LazyLoading_V,
   },
   "/infiniteScroll": {
     key: "/infiniteScroll",
