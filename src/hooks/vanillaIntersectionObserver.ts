@@ -1,5 +1,5 @@
 const vanillaIntersectionObserver = (
-  $elem: HTMLImageElement,
+  $elem: HTMLElement,
   options: IntersectionObserverInit,
   callback: (entry: IntersectionObserverEntry[]) => void
 ) => {

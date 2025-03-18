@@ -1,5 +1,6 @@
 import Accordions from "./components/accordion";
 import InfiniteScrollR from "./components/infiniteScroll/react";
+import InfiniteScrollV from "./components/infiniteScroll/vanilla";
 import LazyLoad1 from "./components/lazyLoading/1_r";
 import LazyLoading_V from "./components/lazyLoading/1_v";
 import LineClamps from "./components/lineClamp";
@@ -30,6 +31,7 @@ export const routePaths = [
   "/lazyLoading/1_r",
   "/lazyLoading/1_v",
   "/infiniteScroll/react",
+  "/infiniteScroll/vanilla",
 ] as const;
 export type ROUTE_PATH = (typeof routePaths)[number];
 
@@ -124,13 +126,19 @@ export const routes: Record<ROUTE_PATH, ROUTE> = {
     key: "/infiniteScroll",
     link: "/infiniteScroll/react",
     name: "07. 무한 스크롤",
-    children: ["/infiniteScroll/react"],
+    children: ["/infiniteScroll/react", "/infiniteScroll/vanilla"],
   },
   "/infiniteScroll/react": {
     key: "/infiniteScroll/react",
     link: "/infiniteScroll/react",
     name: "#1 React",
     children: InfiniteScrollR,
+  },
+  "/infiniteScroll/vanilla": {
+    key: "/infiniteScroll/vanilla",
+    link: "/infiniteScroll/vanilla",
+    name: "#2 Vanilla",
+    children: InfiniteScrollV,
   },
   "/scrollBox": {
     key: "/scrollBox",
