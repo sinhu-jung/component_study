@@ -23,13 +23,6 @@ export const LazyImage = ({
   const { entries, observerRef } = useIntersectionOpserver(imgRef, ioOptions);
 
   useEffect(() => {
-    if ("loading" in HTMLImageElement.prototype) {
-      imgRef.current!.setAttribute("src", src);
-      imgRef.current!.setAttribute("loading", "lazy");
-      observerRef.current?.disconnect();
-      return;
-    }
-
     const isVisible = entries[0]?.isIntersecting;
     if (isVisible) {
       const onLoad = () => {
@@ -50,9 +43,6 @@ export const LazyImage = ({
       width={width}
       height={height}
       alt=""
-      // 브라우저에서 이미지 로딩을 자동으로 처리하는 것
-      src={src}
-      loading="lazy"
     />
   );
 };

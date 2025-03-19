@@ -2,7 +2,7 @@ import VanillaWrapper from "@/components/vanillaWrapper";
 import cx from "../cx";
 import { Datum } from "../react/useInfiniteFetcher";
 import infiniteFetcher, { FetchState } from "./infiniteFetcher";
-import vanillaIntersectionObserver from "@/hooks/vanillaIntersectionObserver";
+import vanillaIntersectionObserver from "@/hooks/vanilla/vanillaIntersectionObserver";
 
 const generateListItem = ({
   id,

@@ -1,4 +1,4 @@
-import vanillaIntersectionObserver from "@/hooks/vanillaIntersectionObserver";
+import vanillaIntersectionObserver from "@/hooks/vanilla/vanillaIntersectionObserver";
 
 const lazyLoad = ($elem: HTMLImageElement, src: string) => {
   const handleIntersect = (entries: IntersectionObserverEntry[]) => {
