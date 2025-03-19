@@ -9,7 +9,7 @@ const ioOptions: IntersectionObserverInit = {
   threshold: 0,
 };
 
-const LazyImage = ({
+export const LazyImage = ({
   src,
   width,
   height,
@@ -17,7 +17,6 @@ const LazyImage = ({
   src: string;
   width: number;
   height: number;
-  loading: "lazy" | "eager";
 }) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const [loaded, setLoaded] = useState(false);
@@ -61,7 +60,7 @@ const LazyImage = ({
 const builtInLazySupported =
   typeof window !== "undefined" && "loading" in HTMLImageElement.prototype;
 const BuiltInImage = (props: any) => (
-  <img {...props} className={cx({ lazy: true })} />
+  <img {...props} className={cx({ lazy: true })} loading="lazy" />
 );
 const Component = builtInLazySupported ? BuiltInImage : LazyImage;
 
@@ -72,13 +71,7 @@ const LazyLoad1 = () => {
         지연로딩<sub>#1</sub>
       </h2>
       {data.map((url, index) => (
-        <Component
-          key={index}
-          src={url}
-          width={600}
-          height={320}
-          loading="lazy"
-        />
+        <Component key={index} src={url} width={600} height={320} />
       ))}
     </>
   );

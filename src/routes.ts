@@ -4,6 +4,7 @@ import InfiniteScrollV from "./components/infiniteScroll/vanilla";
 import LazyLoad1 from "./components/lazyLoading/1_r";
 import LazyLoading_V from "./components/lazyLoading/1_v";
 import LineClamps from "./components/lineClamp";
+import ScrollBox from "./components/scrollBox";
 import TabMenus from "./components/tabMenu";
 import TextBoxes from "./components/textBox";
 import Tooltip from "./components/tooltip";
@@ -144,7 +145,7 @@ export const routes: Record<ROUTE_PATH, ROUTE> = {
     key: "/scrollBox",
     link: "/scrollBox",
     name: "08. 횡 스크롤 박스",
-    children: null,
+    children: ScrollBox,
   },
   "/scrollSpy": {
     key: "/scrollSpy",
