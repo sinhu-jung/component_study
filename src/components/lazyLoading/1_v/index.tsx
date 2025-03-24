@@ -3,7 +3,11 @@ import data from "../data";
 import cx from "../cx";
 import lazyLoad from "./lazyLoad";
 
-const lazyImageBuilder = (src: string, width: number, height: number) => {
+export const lazyImageBuilder = (
+  src: string,
+  width: number,
+  height: number
+) => {
   const $elem = document.createElement("img");
   $elem.classList.add(cx("lazy"));
   $elem.setAttribute("width", width + "px");
