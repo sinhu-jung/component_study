@@ -5,6 +5,7 @@ import LazyLoad1 from "./components/lazyLoading/1_r";
 import LazyLoading_V from "./components/lazyLoading/1_v";
 import LineClamps from "./components/lineClamp";
 import ScrollBox from "./components/scrollBox";
+import ScrollSpy1 from "./components/scrollSpy/react/1_r";
 import TabMenus from "./components/tabMenu";
 import TextBoxes from "./components/textBox";
 import Tooltip from "./components/tooltip";
@@ -33,6 +34,7 @@ export const routePaths = [
   "/lazyLoading/1_v",
   "/infiniteScroll/react",
   "/infiniteScroll/vanilla",
+  "/scrollSpy/1_r",
 ] as const;
 export type ROUTE_PATH = (typeof routePaths)[number];
 
@@ -149,9 +151,15 @@ export const routes: Record<ROUTE_PATH, ROUTE> = {
   },
   "/scrollSpy": {
     key: "/scrollSpy",
-    link: "/scrollSpy",
+    link: "/scrollSpy/1_r",
     name: "09. 스크롤 스파이",
-    children: null,
+    children: ["/scrollSpy/1_r"],
+  },
+  "/scrollSpy/1_r": {
+    key: "/scrollSpy/1_r",
+    link: "/scrollSpy/1_r",
+    name: "#1 React",
+    children: ScrollSpy1,
   },
   "/snackbar": {
     key: "/snackbar",
