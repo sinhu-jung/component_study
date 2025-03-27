@@ -1,43 +1,33 @@
-import { LazyImage } from "@/components/lazyLoading/1_r";
-import cx from "../cx";
-import data from "../data";
-import { useCallback, useEffect, useRef, useState } from "react";
 import useIntersectionObserver from "@/hooks/useIntersectionObserverV2";
+import cx from "../cx";
+import {
+  ForwardedRef,
+  Ref,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 type Direction = "prev" | "next";
 type ItemElemType = HTMLLIElement | null;
-const DefaultButtonState = {
-  prev: true,
-  next: true,
-};
-const Item = ({
-  id,
-  description,
-  imgUrl,
-}: {
-  id: string;
-  description: string;
-  imgUrl: string;
-}) => (
-  <div>
-    <LazyImage src={imgUrl} width={250} height={400} />
-    <span>{description}</span>
-  </div>
-);
+const DefaultButtonState = { prev: true, next: true };
 
-const getVisibleEdgeItems = (
+const getVisibileEdgeItems = (
   $list: HTMLUListElement,
   $items: ItemElemType[]
 ) => {
   const { left: lLeft, right: lRight } = $list.getBoundingClientRect();
-  const isVisible = (item: ItemElemType) => {
-    const { left, right } = item?.getBoundingClientRect() || {
+  const isVisible = ($item: ItemElemType) => {
+    const { left, right } = $item?.getBoundingClientRect() || {
       left: 0,
       right: 0,
     };
-    // 전부 화면상에 존재하는 조건: left > lLeft && right < lRight
-    // 애매하게 걸친 경우까지 인정하는 조건: left < lRight && right > lLeft
-    return left < lRight && right > lLeft;
+    // 전부 화면상에 존재하는 조건: left >= lLeft && right <= lRight
+    // 애매하게 걸친 경우까지 인정하는 조건: left <=lRight && right >= lLeft
+    return left <= lRight && right >= lLeft; // 애매하게 보이는 경우까지 모두 포함시킴.
   };
   const leftIndex = Math.max($items.findIndex(isVisible), 0);
   const rightIndex = Math.min(
@@ -47,47 +37,81 @@ const getVisibleEdgeItems = (
   return { left: $items[leftIndex], right: $items[rightIndex] };
 };
 
-const ScrollBox = () => {
+export type ScrollBoxHandle =
+  | {
+      scrollFocus: (index: number, behavior?: "instant" | "smooth") => void;
+    }
+  | null
+  | undefined;
+
+type ScrollBoxProps<T> = {
+  list: T[];
+  Item: (props: T & { handleClick?: () => void }) => JSX.Element;
+  currentIndex?: number;
+  wrapperClassName?: string;
+  handleItemClick?: (item: T, index: number) => () => void;
+};
+
+const ScrollBox = <T extends { id: string }>(
+  {
+    list,
+    Item,
+    currentIndex = 0,
+    wrapperClassName = "",
+    handleItemClick,
+  }: ScrollBoxProps<T>,
+  ref: ForwardedRef<unknown>
+) => {
   const [buttonEnabled, setButtonEnabled] = useState<{
     prev: boolean;
     next: boolean;
   }>(DefaultButtonState);
-  const watcherRef = useRef<ItemElemType[]>([]);
   const listRef = useRef<HTMLUListElement>(null);
   const itemsRef = useRef<ItemElemType[]>([]);
+  const watcherRef = useRef<ItemElemType[]>([]);
   const { entries: watcherEntries } = useIntersectionObserver(watcherRef);
-  const move = useCallback(
-    (direction: Direction) => () => {
-      // ul의 scrollLeft값을 direction에 따라서 prev 일때는 -scrollWidth / next 일때는 +scrollWidth
-      // 위 방식으로는 전부 보여지지 않는 항목이 중간중간 동작할 수 밖에 없음
-      // 전부 보여지지 않은 아이템을 찾아서, 개를 기준으로 스크롤 이동.
-      // const elem: HTMLElement = document.createElement("div");
-      // elem.scrollIntoView({
-      //   inline: "start", // 가로 위치 'start | center | end | nearest'
-      //   block: "nearest", // 세로 위치 'start | center | end | nearest'
-      //   behavior: "smooth", // 애니메이션 효과 smooth 0 / instant X / auto 알아서
-      // });
-      if (!listRef.current || !itemsRef.current.length) return;
-      const { left, right } = getVisibleEdgeItems(
-        listRef.current,
-        itemsRef.current
-      );
-      const elem = direction === "prev" ? left : right;
-      elem?.scrollIntoView({
-        inline: direction === "prev" ? "end" : "start",
+
+  const scrollFocus = useCallback(
+    (index: number, behavior: "instant" | "smooth" = "instant") => {
+      itemsRef.current[index]?.scrollIntoView({
         block: "nearest",
-        behavior: "smooth",
+        inline: "center",
+        behavior,
       });
     },
     []
   );
 
+  useImperativeHandle(
+    ref,
+    () => ({
+      scrollFocus,
+    }),
+    []
+  );
+
+  const move = useCallback((direction: Direction) => {
+    if (!listRef.current || !itemsRef.current.length) return;
+    const { left, right } = getVisibileEdgeItems(
+      listRef.current,
+      itemsRef.current
+    );
+    const elem = direction === "prev" ? left : right; // 보여지는 맨 끝 아이템!
+    elem?.scrollIntoView({
+      inline: direction === "prev" ? "end" : "start", // 가로위치 'start' | 'end' | 'nearest' | 'center'
+      block: "nearest", // 세로위치 'start' | 'end' | 'nearest' | 'center'
+      behavior: "smooth", // 애니메이션 유무. smooth: O / instant: X / auto: 알아서...
+    });
+  }, []);
+
   useEffect(() => {
-    if (!watcherEntries.length) setButtonEnabled(DefaultButtonState);
+    if (!watcherEntries.length) {
+      setButtonEnabled(DefaultButtonState);
+    }
     setButtonEnabled((prev) => {
       const newState = { ...DefaultButtonState };
       watcherEntries.forEach((e) => {
-        const direction = (e.target as HTMLElement).dataset
+        const direction = (e.target as HTMLLIElement).dataset
           .direction as Direction;
         newState[direction] = false;
       });
@@ -96,38 +120,48 @@ const ScrollBox = () => {
   }, [watcherEntries]);
 
   return (
-    <div className={cx("scrollBox")}>
+    <div className={cx("scrollBox", wrapperClassName)}>
       <ul className={cx("list")} ref={listRef}>
         <li
           className={cx("observer")}
-          ref={(r) => (watcherRef.current[0] = r)}
+          ref={(r) => {
+            watcherRef.current[0] = r;
+          }}
           data-direction="prev"
         />
-        {data.map((item, i) => (
+        {list.map((item, i) => (
           <li
             key={item.id}
-            className={cx("item")}
-            ref={(r) => (itemsRef.current[i] = r)}
+            className={cx("item", { current: currentIndex === i })}
+            ref={(r) => {
+              itemsRef.current[i] = r;
+            }}
           >
-            <Item {...item} />
+            <Item {...item} handleClick={handleItemClick?.(item, i)} />
           </li>
         ))}
         <li
           className={cx("observer")}
-          ref={(r) => (watcherRef.current[1] = r)}
+          ref={(r) => {
+            watcherRef.current[1] = r;
+          }}
           data-direction="next"
         />
       </ul>
       <button
         className={cx("nav-button", "prev", { on: buttonEnabled.prev })}
-        onClick={move("prev")}
-      ></button>
+        onClick={() => move("prev")}
+      />
       <button
         className={cx("nav-button", "next", { on: buttonEnabled.next })}
-        onClick={move("next")}
-      ></button>
+        onClick={() => move("next")}
+      />
     </div>
   );
 };
 
-export default ScrollBox;
+const ForwardedScrollBox = forwardRef(ScrollBox) as <T extends { id: string }>(
+  props: ScrollBoxProps<T> & { ref: Ref<ScrollBoxHandle> }
+) => JSX.Element;
+
+export default ForwardedScrollBox;
