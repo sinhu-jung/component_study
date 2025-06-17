@@ -71,6 +71,33 @@ const ScrollBox = <T extends { id: string }>(
   const watcherRef = useRef<ItemElemType[]>([]);
   const { entries: watcherEntries } = useIntersectionObserver(watcherRef);
 
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollStart = useRef(0);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    const list = listRef.current;
+    if (!list) return;
+    isDragging.current = true;
+    startX.current = e.pageX;
+    scrollStart.current = list.scrollLeft;
+    list.classList.add("dragging");
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    const list = listRef.current;
+    if (!list || !isDragging.current) return;
+    const x = e.pageX;
+    const dx = x - startX.current;
+    list.scrollLeft = scrollStart.current - dx;
+  };
+
+  const onMouseUpOrLeave = () => {
+    isDragging.current = false;
+    listRef.current?.classList.remove("dragging");
+  };
+
   const scrollFocus = useCallback(
     (index: number, behavior: "instant" | "smooth" = "instant") => {
       itemsRef.current[index]?.scrollIntoView({
@@ -91,16 +118,16 @@ const ScrollBox = <T extends { id: string }>(
   );
 
   const move = useCallback((direction: Direction) => {
-    if (!listRef.current || !itemsRef.current.length) return;
+    if (!scrollContainerRef.current || !itemsRef.current.length) return;
     const { left, right } = getVisibileEdgeItems(
-      listRef.current,
+      scrollContainerRef.current.querySelector("ul")!,
       itemsRef.current
     );
-    const elem = direction === "prev" ? left : right; // 보여지는 맨 끝 아이템!
+    const elem = direction === "prev" ? left : right;
     elem?.scrollIntoView({
-      inline: direction === "prev" ? "end" : "start", // 가로위치 'start' | 'end' | 'nearest' | 'center'
-      block: "nearest", // 세로위치 'start' | 'end' | 'nearest' | 'center'
-      behavior: "smooth", // 애니메이션 유무. smooth: O / instant: X / auto: 알아서...
+      inline: direction === "prev" ? "end" : "start",
+      block: "nearest",
+      behavior: "smooth",
     });
   }, []);
 
@@ -121,33 +148,43 @@ const ScrollBox = <T extends { id: string }>(
 
   return (
     <div className={cx("scrollBox", wrapperClassName)}>
-      <ul className={cx("list")} ref={listRef}>
-        <li
-          className={cx("observer")}
-          ref={(r) => {
-            watcherRef.current[0] = r;
-          }}
-          data-direction="prev"
-        />
-        {list.map((item, i) => (
+      <div className={cx("scroll-container")} ref={scrollContainerRef}>
+        <ul
+          className={cx("list")}
+          ref={listRef}
+          onMouseDown={onMouseDown}
+          onMouseMove={onMouseMove}
+          onMouseUp={onMouseUpOrLeave}
+          onMouseLeave={onMouseUpOrLeave}
+          onDragStart={(e) => e.preventDefault()}
+        >
           <li
-            key={item.id}
-            className={cx("item", { current: currentIndex === i })}
+            className={cx("observer")}
             ref={(r) => {
-              itemsRef.current[i] = r;
+              watcherRef.current[0] = r;
             }}
-          >
-            <Item {...item} handleClick={handleItemClick?.(item, i)} />
-          </li>
-        ))}
-        <li
-          className={cx("observer")}
-          ref={(r) => {
-            watcherRef.current[1] = r;
-          }}
-          data-direction="next"
-        />
-      </ul>
+            data-direction="prev"
+          />
+          {list.map((item, i) => (
+            <li
+              key={item.id}
+              className={cx("item", { current: currentIndex === i })}
+              ref={(r) => {
+                itemsRef.current[i] = r;
+              }}
+            >
+              <Item {...item} handleClick={handleItemClick?.(item, i)} />
+            </li>
+          ))}
+          <li
+            className={cx("observer")}
+            ref={(r) => {
+              watcherRef.current[1] = r;
+            }}
+            data-direction="next"
+          />
+        </ul>
+      </div>
       <button
         className={cx("nav-button", "prev", { on: buttonEnabled.prev })}
         onClick={() => move("prev")}

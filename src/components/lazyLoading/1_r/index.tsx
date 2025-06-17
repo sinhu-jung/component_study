@@ -42,6 +42,7 @@ export const LazyImage = ({
       className={cx({ lazy: !loaded })}
       width={width}
       height={height}
+      draggable={false}
       alt=""
     />
   );
